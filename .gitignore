@@ -1,0 +1,71 @@
+terraform.tfstate
+.terraform.lock.hcl
+**/imported_protobuffers
+
+# Devspace stuff
+*.devspace
+**/deploy.log
+
+# Python cache
+*__pycache__/
+*.pyc
+*.ebextensions
+*.devspace
+*.egg-info
+*.eggs*
+**.egg*
+**/.ebextensions
+**/.benchmarks
+**/.coverage*
+**/*.sqlite3
+
+# Jupyter notebook
+*.ipynb_checkpoints/
+*.ipynb
+
+# IDE stuff
+*.project
+*.idea/
+*.vscode/
+*.vs/
+*.DS_Store
+*.code-workspace
+*.db
+
+# Caches
+**/cache
+
+# Data files
+*.hdf5
+*.npy
+*.geojson
+*.csv
+*.p
+*.stats
+*_database.dump
+# Exception for csv test files
+!*test*.csv
+# Exception for test hdf5 files
+!*test*.hdf5
+# Exception for test geojson files
+!*test*.geojson
+*.pkl
+*.out
+
+# gRPC auto-generated files
+*_pb2*.py
+*pb.go
+
+# Profiling results
+*.cprof
+
+# Helm
+*.tgz
+Chart.lock
+
+#protobuffers outside of shared modules
+**/*.proto
+!shared/protobuffers/*.proto
+
+# Test runs on dev
+*.log

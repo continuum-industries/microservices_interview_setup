@@ -1,0 +1,17 @@
+image: continuumindustries/frontend-gateway-api
+imageTag: ""
+deployment:
+  replicas: 1
+
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "512Mi"
+      cpu: "1"
+
+GIN_MODE: release
+
+ingress:
+  hostname: app.optioneer.ai
