@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  selector:
+    matchLabels:
+      run: {{ .Chart.Name }}
+  replicas: {{ .Values.deployment.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        run: {{ .Chart.Name }}
+    spec:
+      imagePullSecrets:
+      - name: docker-hub-creds
+      containers:
+      - name: {{ .Chart.Name }}
+        resources:
+          requests:
+            memory: {{ .Values.deployment.resources.requests.memory }}
+            cpu: {{ .Values.deployment.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.deployment.resources.limits.memory }}
+            cpu: {{ .Values.deployment.resources.limits.cpu }}
+        image: {{ .Values.image }}
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /healthz/
+            port: 80
+            httpHeaders:
+            - name: Origin
+              value: {{ .Values.ingress.hostname }}
+        readinessProbe:
+          httpGet:
+            path: /healthz/
+            port: 80
+            httpHeaders:
+            - name: Origin
+              value: {{ .Values.ingress.hostname }}
+        envFrom:
+          - secretRef:
+              name: sentry-info
+          - secretRef:
+              name: geodata-s3-bucket
+          - configMapRef:
+              name: hostnames
+        env:
+          - name: SERVICE_VERSION
+            value: {{ .Values.imageTag }}
+          - name: GIN_MODE
+            value: {{ .Values.GIN_MODE }}
+          - name: AWS_GET_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: geodata-s3-get-user-iam-credentials
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_GET_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: geodata-s3-get-user-iam-credentials
+                key: AWS_SECRET_ACCESS_KEY
+          - name: AWS_PUT_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: geodata-s3-put-user-iam-credentials
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_PUT_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: geodata-s3-put-user-iam-credentials
+                key: AWS_SECRET_ACCESS_KEY
